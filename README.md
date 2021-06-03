@@ -154,12 +154,12 @@ Assertions.assertThat(member).isEqualTo(result);
 
 ### 의존성 주입 (DI)
 
--필드 주입
- -잘 사용하지 않음 (해당 Bean을 중간에 바꿀 수 있는 방법이 없음)
--Setter 주입
- -단점 -> 한번 setting되면 중간에 Bean을 바꿀 일이 거의 없는데, Setter 메서드는 항상 Public으로 열려있어야함
--생성자 주입
- -처음 application이 조립될 때, 한번 설정하고 다시 변경 못하도록 막을 수 있음 (의존관계가 실행중에 동적으로 변하는 경우는 거의 없음)
+- 필드 주입
+  - 잘 사용하지 않음 (해당 Bean을 중간에 바꿀 수 있는 방법이 없음)
+- Setter 주입
+  - 단점 -> 한번 setting되면 중간에 Bean을 바꿀 일이 거의 없는데, Setter 메서드는 항상 Public으로 열려있어야함
+- 생성자 주입
+  - 처음 application이 조립될 때, 한번 설정하고 다시 변경 못하도록 막을 수 있음 (의존관계가 실행중에 동적으로 변하는 경우는 거의 없음)
 
 정형화된 Cotroller, Service, Repository(일반적으로 사용하는 코드들) : **컴포넌트 스캔 활용**<br>
 정형화되지 않거나, 상황에 따라 구현 클래스를 변경해야하는 클래스 : **Configuration 활용**<br><br>
@@ -168,10 +168,10 @@ Autowired를 통한 DI는 Bean으로 등록된 객체에서만 동작<br>
 
 ### Component Scan
 
--① Component Scan
- -@Component 어노테이션이 있으면 Bean으로 자동 등록
- -@Contoller, @Service, @Repository등은 내부적으로 @Component 어노테이션이 포함되어 있음
- -@Autowired를 사용하면, 객체 생성 시점에 컨테이너에서 Bean을 찾아서 주입시켜줌
+- ① Component Scan
+  - @Component 어노테이션이 있으면 Bean으로 자동 등록
+  - @Contoller, @Service, @Repository등은 내부적으로 @Component 어노테이션이 포함되어 있음
+  - @Autowired를 사용하면, 객체 생성 시점에 컨테이너에서 Bean을 찾아서 주입시켜줌
 
 ```java
 
@@ -204,8 +204,8 @@ public class MemoryMemberRepository implements MemberRepository{~}
 
 ### Configuration
 
--② Configuration
- -@Configuration 클래스를 통해 Bean을 직접 등록
+- ② Configuration
+  - @Configuration 클래스를 통해 Bean을 직접 등록
 
 ```java
 @Configuration
@@ -226,13 +226,13 @@ public class SpringConfig {
 
 ## Mapping
 
--GetMappind
- -URL을 통한 조회때 주로 사용
- -ex) @GetMapping("/Members/new")
+- GetMappind
+  - URL을 통한 조회때 주로 사용
+  - ex) @GetMapping("/Members/new")
 
--PostMapping
- -보통 데이터를 Form를 통해 전달할 때 주로 사용
- -ex) @PostMapping("/Members/new")
+- PostMapping
+  - 보통 데이터를 Form를 통해 전달할 때 주로 사용
+  - ex) @PostMapping("/Members/new")
 
 
 ## IntelliJ 단축키
