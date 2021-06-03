@@ -64,16 +64,16 @@ Java bean 규약 => getter / setter (property 접근방식)
 
 ## 비즈니스 요구사항
 
--Cotroller 
- -웹 MVC의 컨트롤러 역할 (외부 요청을 받음)
--Service
- -핵심 비즈니스 로직 구현
- -Service 클래스는 비지니스에 의존적인 용어를 사용해야함 (ex: join)
--Repository 
- -데이터베이스에 접근, 도메인 객체를 DB에 저장하고 관리
- -Repository 클래스는 기계적으로 개발스러운 용어를 사용(ex : insert, select 등)
--Damain
- -비즈니스 도메인 객체 (ex : 회원, 주문, 쿠폰 등등 주로 데이터베이스에 저장하고 관리됨)
+- Cotroller 
+ - 웹 MVC의 컨트롤러 역할 (외부 요청을 받음)
+- Service
+ - 핵심 비즈니스 로직 구현
+ - Service 클래스는 비지니스에 의존적인 용어를 사용해야함 (ex: join)
+- Repository 
+ - 데이터베이스에 접근, 도메인 객체를 DB에 저장하고 관리
+ - Repository 클래스는 기계적으로 개발스러운 용어를 사용(ex : insert, select 등)
+- Damain
+ - 비즈니스 도메인 객체 (ex : 회원, 주문, 쿠폰 등등 주로 데이터베이스에 저장하고 관리됨)
 
 ### Optional 클래스
 
