@@ -135,18 +135,16 @@ Assertions.assertThat(member).isEqualTo(result);
 ```java
 
 // ① assertThorows 메소드 사용(기대되는 결과, 실제 수행 결과)
-        assertThrows(IllegalStateException.class, ()->memberService.join(member2));
+assertThrows(IllegalStateException.class, ()->memberService.join(member2));
 
 // ② try~catch 문으로 테스트
-        /*
-        try{
-            memberService.join(member2);
-            fail();
+try{
+ memberService.join(member2);
+ fail();
 
-        }catch (IllegalStateException e){
-            Assertions.assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
-        }
-        */
+}catch (IllegalStateException e){
+ Assertions.assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
+}
 
 ```
 
