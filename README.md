@@ -301,13 +301,13 @@ public Member save(Member member) {
 
 // Create
 // 대신 Query를 작성해줌
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        jdbcInsert.withTableName("member").usingGeneratedKeyColumns("id");
+SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+jdbcInsert.withTableName("member").usingGeneratedKeyColumns("id");
 
-        Map<String,Object> parameters = new HashMap<>();
-        parameters.put("name",member.getName());
+Map<String,Object> parameters = new HashMap<>();
+parameters.put("name",member.getName());
 
-        Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
+Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
 
 // Select
 // connection, preparedStatement, resultSet 에 대한 코드를 모두 자동으로 만들어줌
