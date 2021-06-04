@@ -341,8 +341,7 @@ jpa는 모든 데이터 변경이 트랜젝션 안에서 실행되어야 함 (Se
 // Create
 em.persist(member)
 // Read
-List<Member> result = em.createQuery("select m from Member m where 
-m.name = :name", Member.class)
+List<Member> result = em.createQuery("select m from Member m where m.name = :name", Member.class)
  .setParameter("name", name)
  .getResultList();
 // Update
@@ -362,8 +361,7 @@ JPA 기능을 구현 클래스 없이 인터페이스 기반으로 사용 가능
   - 페이징 기능 자동 제공
 
 ```java
-public interface SpringDataJpaMemberRepository extends JpaRepository<Member,
-Long>, MemberRepository {
+public interface SpringDataJpaMemberRepository extends JpaRepository<Member, Long>, MemberRepository {
  Optional<Member> findByName(String name);
 }
        
