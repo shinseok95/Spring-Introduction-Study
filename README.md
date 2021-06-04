@@ -340,12 +340,15 @@ jpa는 모든 데이터 변경이 트랜젝션 안에서 실행되어야 함 (Se
 ```java
 // Create
 em.persist(member)
+
 // Read
 List<Member> result = em.createQuery("select m from Member m where m.name = :name", Member.class)
  .setParameter("name", name)
  .getResultList();
+ 
 // Update
 member.setName("Spring")
+
 // Delete
 em.remove(member)
        
