@@ -145,8 +145,15 @@ try{
 }catch (IllegalStateException e){
  Assertions.assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
 }
-
 ```
+
+### 스프링 통합 테스트
+
+- @SpringBootTest 
+  - 스프링 컨테이너와 테스트를 함께 실행한다
+- @Transactional 
+  - AfterEach로 지워줄 필요 없이, 테스트 내용이 DB에 반영이 되지 않음 -> 다음 테스트에 영향 X
+
 
 ## Bean과 Dependancy
 
@@ -231,6 +238,173 @@ public class SpringConfig {
 - PostMapping
   - 보통 데이터를 Form를 통해 전달할 때 주로 사용
   - ex) @PostMapping("/Members/new")
+
+## JDBC
+
+- Connection 
+  - DB와 연결하는 역할
+- PreparedStatement
+  - SQL 구문 실행 역할
+- ResultSet
+  - 결과값을 받아오는 역할
+<br><br>
+
+- DataSourceUtils : DB 트랜잭션 관련 기능을 알아서 해줌
+  - DataSourceUtils.getConnection(dataSource) : DB 연결
+  - DataSourceUtils.releaseConnections(conn,dataSource) : DB 연결 해제 (DB를 사용할 때는, 사용 후 반드시 연결을 끊어줘야함)<br>
+
+<pre>
+
+객체지향의 다형성을 극대화해서 사용 가능 => Repository가 변경되더라도 Service에서 코드 수정없이 변경 가능
+즉, 스프링의 DI를 사용하면, 기존 코드를 전혀 손대지 않고, 설정만으로 구현 클래스를 변경할 수 있다.
+OCP(Open-Close Principle) : 확장에는 열려있고, 수정에는 닫혀있다
+</pre>
+
+```java
+
+public Member save(Member member) {
+
+        String sql = "insert into member(name) values(?)";
+
+        Connection conn = null; // DB와 연결하는 역할
+        PreparedStatement pstmt = null; // SQL 구문 실행 역할
+        ResultSet rs = null; // 결과값을 받아오는 역할
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, member.getName());
+            
+            pstmt.executeUpdate();
+            
+            rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                member.setId(rs.getLong(1));
+            } else {
+                throw new SQLException("id 조회 실패");
+            }
+            return member;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs); }
+    }
+```
+
+## JDBC Template
+
+- JDBC Template 라이브러리 (or MyBatis)
+  - JDBC에서 반복되는 코드를 대부분 제거해줌(SQL은 직접 작성)
+
+```java
+
+// Create
+// 대신 Query를 작성해줌
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        jdbcInsert.withTableName("member").usingGeneratedKeyColumns("id");
+
+        Map<String,Object> parameters = new HashMap<>();
+        parameters.put("name",member.getName());
+
+        Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
+
+// Select
+// connection, preparedStatement, resultSet 에 대한 코드를 모두 자동으로 만들어줌
+List<Member> result = jdbcTemplate.query("select * from member where id=?",memberRowMapper(),id);
+        return result.stream().findAny();
+        
+```
+
+## JPA
+
+- ORM(Object-Relational Mapping)
+  - 객체는 객체대로 설계하고, 관계형 DB는 관계형 DB대로 설계 -> ORM이 중간에 매핑
+
+- JPA(Java Persistence API) 
+  - 자바의 ORM 기술 표준 
+  - Hibernate : ORM 프레임워크 (open source)
+
+<pre>
+JPA는 기존의 반복 코드(conn, ps, rs)뿐만 아니라 기본적인 SQL도 직접 만들어서 실행
+
+JPA를 통해 SQL & 데이터 중심 설계 -> 객체 중심 설계로 패러다임 전환
+
+jpa는 모든 데이터 변경이 트랜젝션 안에서 실행되어야 함 (Service 클래스에 @Transactional을 붙여줘야함)
+
+테이블 : 객체에 @Entity 어노테이션을 붙이면 테이블처럼 사용 가능
+테이블 관리(CRUD) : EntityManager 객체를 통해 모든 관리 가능
+</pre>
+
+- 테이블 : 객체에 @Entity 어노테이션을 붙이면 테이블처럼 사용 가능
+- 테이블 관리(CRUD) : EntityManager 객체를 통해 모든 관리 가능
+
+
+```java
+// Create
+em.persist(member)
+// Read
+List<Member> result = em.createQuery("select m from Member m where 
+m.name = :name", Member.class)
+ .setParameter("name", name)
+ .getResultList();
+// Update
+member.setName("Spring")
+// Delete
+em.remove(member)
+       
+```
+
+## 스프링 데이터 JPA
+
+JPA 기능을 구현 클래스 없이 인터페이스 기반으로 사용 가능
+
+- 기능
+  - 인터페이스를 통한 기본적인 CRUD
+  - findByName() , findByEmail() 처럼 메서드 이름 만으로 조회 기능 제공
+  - 페이징 기능 자동 제공
+
+```java
+public interface SpringDataJpaMemberRepository extends JpaRepository<Member,
+Long>, MemberRepository {
+ Optional<Member> findByName(String name);
+}
+       
+```
+
+## AOP
+
+- AOP(Aspect Oriented Programming : 관점 지향 프로그래밍)
+  - 어떤 로직을 기준으로 공통 관심 사항(cross-cutting-concern)과 핵심 관리 사항(core concern)을 분리하여 모듈화
+  - AOP를 적용하면, 실행되기 전까지 실제 객체 대신 Proxy 객체가 등록됨
+
+```java
+
+// AOP 설정
+@Aspect
+@Component
+public class TimeTraceAop {
+
+    // 어디에 적용시킬건지 설정
+    @Around("execution(* hello.hellospring..*(..))")
+    public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+        System.out.println("START: " + joinPoint.toString());
+        try {
+
+            // 핵심 관심 사항이 여기서 실행됨
+            return joinPoint.proceed();
+        } finally {
+            long finish = System.currentTimeMillis();
+            long timeMs = finish - start;
+            System.out.println("END: " + joinPoint.toString()+ " " + timeMs +
+                    "ms");
+        }
+    }
+}
+}
+       
+```
 
 
 ## IntelliJ 단축키
